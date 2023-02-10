@@ -12,7 +12,7 @@ class GameService () {
                                                  "5" to 5, "6" to 6, "7" to 7, "8" to 8, "9" to 9,
                                                  "10" to 10 )
 
-    val frameArray  = Array<Frame>(10) { Frame()  }
+    val frameArray  = Array(10) { Frame()  }
 
     fun gameShot(pinCount: String): String {
         var status = "OK"
@@ -34,7 +34,7 @@ class GameService () {
 
     private fun handleNormalFrame (pinCount: String, frame: Frame) : String {
 
-        var status = when(pinCount) {
+        val status = when(pinCount) {
 
             "X" -> normalStrike (frame, pinCount)
 
@@ -53,7 +53,7 @@ class GameService () {
 
     private fun handleClosingFrame (pinCount: String, frame: Frame) : String {
 
-        var status = when(pinCount) {
+        val status = when(pinCount) {
             "X" -> closingStrike (frame, pinCount)
 
             "F","G","-" -> handleFault(frame, pinCount)
@@ -71,12 +71,12 @@ class GameService () {
         var status = ""
 
         if (currentShot == 0) {
-            frame.first = pinCount;
+            frame.first = pinCount
             currentShot++
 
         } else {
             if ((allowedValues[frame.first]!! + allowedValues[pinCount]!!) < 10) {
-                frame.second = pinCount;
+                frame.second = pinCount
                 currentShot++
 
             } else if ((allowedValues[frame.first]!! + allowedValues[pinCount]!!) == 10) {
@@ -93,15 +93,15 @@ class GameService () {
     private fun closingElse (frame: Frame, pinCount: String): String {
         var status = ""
         if (currentShot == 0) {
-            frame.first = pinCount;
+            frame.first = pinCount
             currentShot++
 
         } else if (currentShot == 1 || currentShot == 2 ) {
             if (frame.first == "X") {
-                frame.first = pinCount;
+                frame.first = pinCount
                 currentShot++
             } else if (allowedValues[frame.first]!! + allowedValues[pinCount]!! < 10) {
-                frame.second = pinCount;
+                frame.second = pinCount
                 currentShot++
             } else if ((allowedValues[frame.first]!! + allowedValues[pinCount]!!) == 10) {
                 status = closingSpare(frame, "/")
@@ -162,18 +162,18 @@ class GameService () {
             frame.first = pinCount
         } else {
             frame.second = pinCount
-        };
-        currentShot++;
+        }
+        currentShot++
         status = "Fault."
         return status
     }
 
     private fun normalStrike ( frame: Frame, pinCount: String): String {
-        var status: String = ""
+        var status = ""
 
         if (currentShot==0) {
-            frame.first = pinCount;
-            currentShot=2;
+            frame.first = pinCount
+            currentShot=2
         } else {
             status = "You can only throw a strike in the first shot."
         }
@@ -187,24 +187,24 @@ class GameService () {
             1 -> frame.second = pinCount
             else -> frame.extra = pinCount
         }
-        currentShot++;
+        currentShot++
 
         return "Strike."
     }
 
     private fun calcScore() {
-        var total: Int = 0
+        var total = 0
 
         for (i in 0..8) {
             var frameTotal = 0
             val frame = frameArray[i]
 
-            if (frame.first == "X") {
-                frameTotal = 10
+            frameTotal = if (frame.first == "X") {
+                10
             } else if (frame.second == "/") {
-                frameTotal = 10
+                10
             } else {
-                frameTotal = (allowedValues[frame.first] ?: 0) + (allowedValues[frame.second] ?: 0)
+                (allowedValues[frame.first] ?: 0) + (allowedValues[frame.second] ?: 0)
             }
             frame.runningScore = frameTotal
         }
@@ -222,10 +222,10 @@ class GameService () {
 
         for (j in 0..8) {
             val frame = frameArray[j]
-            print("|${frame!!?.first}|${frame!!?.second}")
+            print("|${frame.first}|${frame.second}")
         }
         val frame = frameArray[9]
-        println("|${frame!!?.first}|${frame!!?.second}|${frame!!?.extra}|")
+        println("|${frame.first}|${frame.second}|${frame.extra}|")
 
         for (k in 0..8) {
             val frame = frameArray[k]
