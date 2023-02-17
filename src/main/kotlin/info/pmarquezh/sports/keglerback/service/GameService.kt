@@ -22,6 +22,26 @@ class GameService() {
         }
     }
 
+    fun getGameString(): String {
+        var gameString = ""
+
+        for (frame in frameArray) {
+            gameString += (frame.first + frame.second + frame.extra).filterNot { it.isWhitespace() }
+        }
+
+        return gameString
+    }
+
+    fun cleanGame() {
+        frameArray  = Array(numFrames) { Frame() }
+
+        currentFrame = 0
+        currentShot = 0
+        hasExtraShot = false
+        gameOver = false
+
+    }
+
     private fun handleFrame (pinCount: String) {
         if (currentFrame == lastFrameIndex) {
             closingShot (pinCount)
@@ -181,6 +201,7 @@ class GameService() {
 
 
     private fun calcScore() {
+        var runningTotal = 0
         for(idx in frameArray.indices) {
             val frame = frameArray[idx]
 
@@ -201,7 +222,14 @@ class GameService() {
                 FrameStatus.CLOSING_PARTIAL, FrameStatus.CLOSING_COMPLETE -> calcClosingPinCount(frame)
                 FrameStatus.PENDING -> 0
             }
+
+            runningTotal += frame.frameWeight
+            frame.runningScore = when (frame.status) {
+                FrameStatus.PENDING -> 0
+                else -> runningTotal
+            }
         }
+
     }
 
     private fun lookAheadOneShot(idx: Int): Int {
@@ -254,10 +282,7 @@ class GameService() {
 
     private fun reportGame() {
 //   SCOREBOARD - BEGIN
-        for (i in 0..8) {
-            print("| ${i+1} ")
-        }
-        println("|  10 |")
+        for (i in 0..8) print("| ${i+1} "); println("|  10 |")
 
         for (j in 0..8) {
             val frame = frameArray[j]
@@ -267,25 +292,9 @@ class GameService() {
         println("|${frame.first}|${frame.second}|${frame.extra}|")
 //   SCOREBOARD - END
 
-//   PINCOUNTS - BEGUN
-        for (k in 0..8) print("|${frameArray[k].pinCount}")
-        println("|${frame.pinCount}|")
-//   PINCOUNTS - END
-
-//   FRAMEWEIGHTS - BEGIN
-        for (k in 0..8) print("|${frameArray[k].frameWeight}")
-        println("|${frame.frameWeight}|")
-//   FRAMEWEIGHTS - END
-    }
-
-    fun cleanGame() {
-        frameArray  = Array(numFrames) { Frame() }
-
-        currentFrame = 0
-        currentShot = 0
-        hasExtraShot = false
-        gameOver = false
-
+        for (theFrame in frameArray.filterNot { it.status == FrameStatus.PENDING } ) print("|${frame.runningScore}"); println("|")
+//        for (frame in frameArray.filterNot { it.status == FrameStatus.PENDING } ) print("|${frame.frameWeight}"); println("|")
+//        for (frame in frameArray.filterNot { it.status == FrameStatus.PENDING } ) print("|${frame.pinCount}"); println("|")
     }
 
     companion object GameState {

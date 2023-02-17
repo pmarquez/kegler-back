@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>info.pmarquezh.sports</groupId>
 	<artifactId>kegler-back</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<name>Kegler Back-End</name>
 	<description>Social Bowling Score Keeper</description>
 	<properties>
